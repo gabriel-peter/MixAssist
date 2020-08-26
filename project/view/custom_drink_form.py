@@ -55,7 +55,7 @@ class CustomDrinkForm(wx.Panel):
         cancelBtn = wx.Button(self, wx.ID_ANY, 'Cancel')
 
         # BINDS
-        self.Bind(wx.EVT_BUTTON, self.onOK, okBtn)
+        self.Bind(wx.EVT_BUTTON, self.submitNewDrink, okBtn)
         self.Bind(wx.EVT_BUTTON, self.onCancel, cancelBtn)
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -99,30 +99,38 @@ class CustomDrinkForm(wx.Panel):
         self.Layout()
 
 
-    def onOK(self, event):
-        # Do something
-        print('onOK handler')
-        data = []
-        data.append(self.inputName.GetValue())
-        # data.append(self.ingredientInput.GetValue())
-        print(self.ingredientRow[0][0].GetValue())
-        selection1 = self.inputThree.GetSelection()
-        selection2 = self.inputFour.GetSelection()
-        data.append(self.inputThree.GetString(selection1))
-        data.append(self.inputFour.GetString(selection2))
-        print(data)
-        self.closeProgram()
+    def submitNewDrink(self, event):
+        drink = {}
+        drink['d_name'] = self.inputName.GetValue()
+
+        ingredientStr = ''
+        for ingredient in self.ingredientRow:
+            name = ingredient[0].GetValue()
+            measurement = ingredient[1].GetValue()
+            unit = ingredient[2].GetValue()
+            if '' in [name, measurement, unit]:
+                continue
+            ingredientStr += '{},{} {}|'.format(name, measurement, unit)
+        
+        drink['d_ingredients'] = ingredientStr
+        selectionGlassware = self.inputThree.GetSelection()
+        selectionCategory = self.inputFour.GetSelection()
+        drink['d_glass'] = self.inputThree.GetString(selectionGlassware)
+        drink['d_cat'] = self.inputFour.GetString(selectionCategory)
+        print(drink)
+        # self.parent.submitNewDrink(drink)
+
 
     def getCategoryChoices(self):
         getCategoryChoices = []
-        with open('/Users/gabrielpeter/MixAssist/data_dump/all_categories.txt') as categoryNames:
+        with open('/Users/gabrielpeter/MixAssist/project/data_dump/all_categories.txt') as categoryNames:
             for cat in categoryNames:
                 getCategoryChoices.append(cat.split(',')[0])
         return getCategoryChoices
 
     def getGlassChoices(self):
         getGlassChoices = []
-        with open('/Users/gabrielpeter/MixAssist/data_dump/all_glass_types.txt') as glassTypes:
+        with open('/Users/gabrielpeter/MixAssist/project/data_dump/all_glass_types.txt') as glassTypes:
             for glass in glassTypes:
                 getGlassChoices.append(glass.split(',')[0])
         return getGlassChoices

@@ -1,7 +1,15 @@
-from view.view import App
-from model.model import Model
+import wx
+from project.view.main_frame import MainFrame
+from project.model.model import Model
 
-if __name__ == "__main__":
-    db =  Model()
+class App(wx.App):
+    def __init__(self):
+        super().__init__(clearSigInt=True)
+        db = Model()
+        self.frame = MainFrame(db)
+        self.frame.Show()
+
+# Run the program
+if __name__ == '__main__':
     app = App()
     app.MainLoop()

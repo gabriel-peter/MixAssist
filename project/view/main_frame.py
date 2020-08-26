@@ -1,17 +1,21 @@
 import wx
-from custom_drink_form import CustomDrinkForm
-from drink_search import DrinkSearch
+from project.view.custom_drink_form import CustomDrinkForm
+from project.view.drink_search import DrinkSearch
 
-class MyFrame(wx.Frame):
-    def __init__(self, title='MixAssist 1.0', pos=(100,100)):
+class MainFrame(wx.Frame):
+    def __init__(self, db, title='MixAssist 1.0', pos=(100,100)):
         super().__init__(None, title=title, pos=pos)
-        # initialize the frame's contents
-        self.OnInit()
-
-    def OnInit(self):
+        self.db = db
         self.panel = DrinkSearch(self)
         self.makeMenuBar()
         self.Fit()
+
+    def submitNewDrink(self, drink):
+        self.db.insert(drink)
+        
+    def searchRecipes(self, query):
+        drinks = self.db.get_drinks_by_name(query)
+        return drinks
 
     def makeMenuBar(self):
         """
@@ -76,3 +80,4 @@ class MyFrame(wx.Frame):
         wx.MessageBox("This is a wxPython Hello World sample",
                       "About Hello World 2",
                       wx.OK|wx.ICON_INFORMATION)
+
