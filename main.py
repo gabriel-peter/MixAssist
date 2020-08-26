@@ -1,7 +1,7 @@
-from view.view import MyApp
-from model.crud import DbManager
+from view.view import App
+from model.model import Model
 
 if __name__ == "__main__":
-    db = DbManager()
-    app = MyApp()
+    db =  Model()
+    app = App()
     app.MainLoop()
