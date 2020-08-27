@@ -22,7 +22,6 @@ class Model:
     # TODO Prevent from SQL Injection attacks by using .format(..)
     def substring_query(self, substring):
         self.c.execute("SELECT * FROM drinks WHERE d_name LIKE '{}%'".format(substring))
-        print(self.c.fetchall())
         return self.c.fetchall()
 
     def load_file(self, path):

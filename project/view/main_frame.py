@@ -5,6 +5,9 @@ from project.view.drink_search import DrinkSearch
 class MainFrame(wx.Frame):
     def __init__(self, db, title='MixAssist 1.0', pos=(100,100)):
         super().__init__(None, title=title, pos=pos)
+        screenSize = wx.DisplaySize()
+        screenWidth = screenSize[0]
+        screenHeight = screenSize[1]
         self.db = db
         self.panel = DrinkSearch(self)
         self.makeMenuBar()
