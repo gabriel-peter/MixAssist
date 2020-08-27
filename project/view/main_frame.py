@@ -11,11 +11,10 @@ class MainFrame(wx.Frame):
         self.Fit()
 
     def submitNewDrink(self, drink):
-        self.db.insert(drink)
+        self.db.insert_drink(drink)
         
     def searchRecipes(self, query):
-        drinks = self.db.get_drinks_by_name(query)
-        return drinks
+        return self.db.substring_query(query)
 
     def makeMenuBar(self):
         """
@@ -28,8 +27,11 @@ class MainFrame(wx.Frame):
         fileMenu = wx.Menu()
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
-        helloItem = fileMenu.Append(-1, "&Make Drink...\tCtrl-N",
+        makeDrinkAction = fileMenu.Append(-1, "&Make Drink...\tCtrl-N",
                 "Make a custom drink via form")
+        fileMenu.AppendSeparator()
+        searchDrinkAction = fileMenu.Append(-1, "&Search Drink...\tCtrl-S",
+                "Search for drink in database")
         fileMenu.AppendSeparator()
         # When using a stock ID we don't need to specify the menu item's
         # label
@@ -53,7 +55,8 @@ class MainFrame(wx.Frame):
         # Finally, associate a handler function with the EVT_MENU event for
         # each of the menu items. That means that when that menu item is
         # activated then the associated handler function will be called.
-        self.Bind(wx.EVT_MENU, self.OpenCustomDrinkForm, helloItem)
+        self.Bind(wx.EVT_MENU, self.OpenCustomDrinkForm, makeDrinkAction)
+        self.Bind(wx.EVT_MENU, self.OpenDrinkSearch, searchDrinkAction)
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
@@ -65,6 +68,10 @@ class MainFrame(wx.Frame):
 
     def OpenCustomDrinkForm(self, event):
         self.SwitchPanel(CustomDrinkForm(self))
+        self.Fit()
+
+    def OpenDrinkSearch(self, event):
+        self.SwitchPanel(DrinkSearch(self))
         self.Fit()
 
     # https://stackoverflow.com/questions/31138061/wxpython-switch-between-multiple-panels

@@ -1,5 +1,5 @@
-from .recipe import Ingredient, Recipe
-from .bar import Bar
+from project.model.recipe import Ingredient, Recipe
+from project.model.bar import Bar
 import json
 import os
 import sqlite3
@@ -18,6 +18,12 @@ class Model:
                     d_instructions text,
                     d_img_url text,
                     d_ingredients text)""")
+
+    # TODO Prevent from SQL Injection attacks by using .format(..)
+    def substring_query(self, substring):
+        self.c.execute("SELECT * FROM drinks WHERE d_name LIKE '{}%'".format(substring))
+        print(self.c.fetchall())
+        return self.c.fetchall()
 
     def load_file(self, path):
         with open(path) as drinks_file:
@@ -75,11 +81,12 @@ class Model:
 
 if __name__ == "__main__":
     db = Model()
-    db.create_table()
-    db.load_file('/Users/gabrielpeter/MixAssist/data_dump/d_Data.json')
+    # db.create_table()
+    # db.load_file('/Users/gabrielpeter/MixAssist/data_dump/d_Data.json')
     fetched_drinks = db.get_drinks_by_name("Margarita")
     print(fetched_drinks[0])
-    db.drop_table()
+    # db.drop_table()
+    db.substring_query("Margarita")
     db.close()
     
 

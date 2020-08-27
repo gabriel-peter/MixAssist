@@ -4,6 +4,7 @@ class CustomDrinkForm(wx.Panel):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.parent = parent
         self.numIngredients = 5
         self.ingredientRowSizer = wx.BoxSizer(wx.VERTICAL)
         self.ingredientRow = []
@@ -51,6 +52,12 @@ class CustomDrinkForm(wx.Panel):
         labelFour = wx.StaticText(self, wx.ID_ANY, 'Pick a category')
         self.inputFour = wx.Choice(self, choices=self.getCategoryChoices())
 
+
+        instructionsIcon = wx.StaticBitmap(self, wx.ID_ANY, bmp)
+        instructionsLabel = wx.StaticText(self, wx.ID_ANY, 'Instructions')
+        self.instructions = wx.TextCtrl(self, wx.ID_ANY)
+        self.instructions.SetHint('Special Instructions')
+
         okBtn = wx.Button(self, wx.ID_ANY, 'OK')
         cancelBtn = wx.Button(self, wx.ID_ANY, 'Cancel')
 
@@ -64,6 +71,7 @@ class CustomDrinkForm(wx.Panel):
         ingredientInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         glassInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         categoryInputSizer = wx.BoxSizer(wx.HORIZONTAL)
+        instructionsSizer = wx.BoxSizer(wx.HORIZONTAL)
         submitBtnSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         titleSizer.Add(titleIco, 0, wx.ALL, 5)
@@ -81,6 +89,10 @@ class CustomDrinkForm(wx.Panel):
         categoryInputSizer.Add(labelFour, 0, wx.ALL, 5)
         categoryInputSizer.Add(self.inputFour, 1, wx.ALL|wx.EXPAND, 5)
 
+        instructionsSizer.Add(instructionsIcon, 0, wx.ALL, 5)
+        instructionsSizer.Add(instructionsLabel, 0, wx.ALL, 5)
+        instructionsSizer.Add(self.instructions, 1, wx.ALL|wx.EXPAND, 5)
+
         submitBtnSizer.Add(okBtn, 0, wx.ALL, 5)
         submitBtnSizer.Add(cancelBtn, 0, wx.ALL, 5)
 
@@ -91,6 +103,7 @@ class CustomDrinkForm(wx.Panel):
         mainSizer.Add(glassInputSizer, 0, wx.ALL|wx.EXPAND, 5)
         mainSizer.Add(categoryInputSizer, 0, wx.ALL|wx.EXPAND, 5)
         mainSizer.Add(wx.StaticLine(self), 0, wx.ALL|wx.EXPAND, 5)
+        mainSizer.Add(instructionsSizer, 0, wx.ALL|wx.EXPAND, 5)
         mainSizer.Add(submitBtnSizer, 0, wx.ALL|wx.CENTER, 5)
 
 
@@ -102,6 +115,7 @@ class CustomDrinkForm(wx.Panel):
     def submitNewDrink(self, event):
         drink = {}
         drink['d_name'] = self.inputName.GetValue()
+        self.inputName.Clear()
 
         ingredientStr = ''
         for ingredient in self.ingredientRow:
@@ -111,14 +125,20 @@ class CustomDrinkForm(wx.Panel):
             if '' in [name, measurement, unit]:
                 continue
             ingredientStr += '{},{} {}|'.format(name, measurement, unit)
+            ingredient[0].Clear()
+            ingredient[1].Clear()
+            ingredient[2].Clear()
         
         drink['d_ingredients'] = ingredientStr
+        drink['d_alcohol'] = 'Alcoholic'
+        drink['d_img_url'] = '404'
         selectionGlassware = self.inputThree.GetSelection()
         selectionCategory = self.inputFour.GetSelection()
         drink['d_glass'] = self.inputThree.GetString(selectionGlassware)
         drink['d_cat'] = self.inputFour.GetString(selectionCategory)
-        print(drink)
-        # self.parent.submitNewDrink(drink)
+        drink['d_instructions'] = self.instructions.GetValue()
+        self.instructions.Clear()
+        self.parent.submitNewDrink(drink)
 
 
     def getCategoryChoices(self):
