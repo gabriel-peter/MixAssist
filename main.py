@@ -7,7 +7,7 @@ class App(wx.App):
     def __init__(self):
         super().__init__(clearSigInt=True)
         db = Model()
-        self.frame = Example(db)
+        self.frame = MainFrame(db)
         self.frame.Show()
         
 
