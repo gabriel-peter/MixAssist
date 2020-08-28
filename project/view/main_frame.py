@@ -1,23 +1,31 @@
 import wx
-from project.view.custom_drink_form import CustomDrinkForm
-from project.view.drink_search import DrinkSearch
+from project.view.custom_drink_form_panel import CustomDrinkForm
+from project.view.drink_search_panel import DrinkSearch
+from project.view.inspect_drink_panel import InspectDrink
 
+# https://stackoverflow.com/questions/21550018/arranging-the-panels-automatically-in-wxpython
 class MainFrame(wx.Frame):
     def __init__(self, db, title='MixAssist 1.0', pos=(100,100)):
         super().__init__(None, title=title, pos=pos)
+        # self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
         screenSize = wx.DisplaySize()
         screenWidth = screenSize[0]
         screenHeight = screenSize[1]
         self.db = db
         self.panel = DrinkSearch(self)
+        # self.panel2 = DrinkSearch(self)
         self.makeMenuBar()
         self.Fit()
+        self.Centre()
 
     def submitNewDrink(self, drink):
         self.db.insert_drink(drink)
         
-    def searchRecipes(self, query):
-        return self.db.substring_query(query)
+    def get_all_drinks(self):
+        return self.db.get_all_drinks()
+    
+    def searchRecipes(self, attr, query):
+        return self.db.filter_drinks(attr, query)
 
     def makeMenuBar(self):
         """
@@ -75,6 +83,10 @@ class MainFrame(wx.Frame):
 
     def OpenDrinkSearch(self, event):
         self.SwitchPanel(DrinkSearch(self))
+        self.Fit()
+
+    def FocusOnDrink(self, drink):
+        self.SwitchPanel(InspectDrink(drink, self))
         self.Fit()
 
     # https://stackoverflow.com/questions/31138061/wxpython-switch-between-multiple-panels

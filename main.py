@@ -1,6 +1,5 @@
 import wx
 from project.view.main_frame import MainFrame
-from project.view.search_frame import Example
 from project.model.model import Model
 
 class App(wx.App):

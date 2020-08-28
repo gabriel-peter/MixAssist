@@ -19,6 +19,11 @@ class Model:
                     d_img_url text,
                     d_ingredients text)""")
 
+
+    def get_all_drinks(self):
+        self.c.execute("SELECT * FROM drinks WHERE 1=1")
+        return self.c.fetchall()
+
     # TODO Prevent from SQL Injection attacks by using .format(..)
     def substring_query(self, substring):
         self.c.execute("SELECT * FROM drinks WHERE d_name LIKE '{}%'".format(substring))
@@ -53,9 +58,10 @@ class Model:
         self.c.execute("SELECT * FROM drinks WHERE d_name=:name", {'name': name})
         return self.c.fetchall()
 
-    def filter_drinks(self, attr, value, quantity=10):
-        self.c.execute("""SELECT * FROM drinks WHERE :attr=:value""", {'attr': attr, 'value': value})
-        return self.c.fetchmany(quantity)
+    def filter_drinks(self, attr, value):
+        # print("""SELECT * FROM drinks WHERE :attr LIKE ':{}}%'""", {'attr': attr, 'value': value})
+        self.c.execute("""SELECT * FROM drinks WHERE {} LIKE '{}%'""".format(attr, value))
+        return self.c.fetchall()
 
     # def update_drink(drink):
     #     with conn:
@@ -74,8 +80,6 @@ class Model:
 
     def close(self):
         self.conn.close()
-
-
 
 
 if __name__ == "__main__":
