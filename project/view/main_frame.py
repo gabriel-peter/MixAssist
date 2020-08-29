@@ -7,14 +7,12 @@ from project.view.inspect_drink_panel import InspectDrink
 class MainFrame(wx.Frame):
     def __init__(self, db, title='MixAssist 1.0', pos=(100,100)):
         super().__init__(None, title=title, pos=pos)
-        # self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
-        screenSize = wx.DisplaySize()
-        screenWidth = screenSize[0]
-        screenHeight = screenSize[1]
         self.db = db
         self.panel = DrinkSearch(self)
-        # self.panel2 = DrinkSearch(self)
+        self.panelStack = [self.panel]
         self.makeMenuBar()
+        self.initToolbar()
+        self.Maximize(True)
         self.Fit()
         self.Centre()
 
@@ -76,26 +74,58 @@ class MainFrame(wx.Frame):
         """Close the frame, terminating the application."""
         self.Close(True)
 
-
     def OpenCustomDrinkForm(self, event):
-        self.SwitchPanel(CustomDrinkForm(self))
-        self.Fit()
+        panel = CustomDrinkForm(self)
+        self.panelStack.append(panel)
+        self.SwitchPanel(panel)
 
     def OpenDrinkSearch(self, event):
-        self.SwitchPanel(DrinkSearch(self))
-        self.Fit()
+        panel = DrinkSearch(self)
+        self.panelStack.append(panel)
+        self.SwitchPanel(panel)
 
     def FocusOnDrink(self, drink):
-        self.SwitchPanel(InspectDrink(drink, self))
-        self.Fit()
+        panel = InspectDrink(drink, self)
+        self.panelStack.append(panel)
+        self.SwitchPanel(panel)
+
+    def initToolbar(self):
+        # https://discuss.wxpython.org/t/tutorial-segmentation-fault-11/34414/2
+        toolbar = self.CreateToolBar()
+        bmp = wx.Bitmap('/Users/gabrielpeter/MixAssist/project/view/texit.png')
+        assert bmp.IsOk()
+        qtool = toolbar.AddTool(wx.ID_ANY, 'Quit', bmp)
+        toolbar.Realize()
+
+        self.Bind(wx.EVT_TOOL, self.popPanelStack, qtool)
+
+        # self.SetSize((350, 250))
+        # self.SetTitle('Simple toolbar')
+        # self.Centre()
+
+    def popPanelStack(self, event):
+        print(self.panelStack)
+        if len(self.panelStack) == 1:
+            self.Close()
+            return
+        self.panelStack.pop()
+        self.SwitchPanel(self.panelStack[-1])
 
     # https://stackoverflow.com/questions/31138061/wxpython-switch-between-multiple-panels
     def SwitchPanel(self,show_pnl):
         self.panel.Hide()
         self.panel = show_pnl
-        self.panel.Layout()
-        self.panel.Show()
+        self.panel.Show() 
         self.Layout()
+        # self.Fit()
+        self.Centre()
+        # self.panel.Fit()
+        # self.panel.Layout()
+        
+        # self.pane.Centre()
+        
+        
+
 
     def OnAbout(self, event):
         """Display an About Dialog"""

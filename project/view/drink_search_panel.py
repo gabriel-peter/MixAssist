@@ -18,9 +18,10 @@ class DrinkSearch(wx.Panel):
         self.list.InsertColumn(0, 'Name',)
         self.list.InsertColumn(1, 'Category')
         self.list.InsertColumn(2, 'Glassware')
-        
+        self.displayTopDrinks(self.parent.get_all_drinks())
 
-        self.resultSizer.Add(self.list, 1, wx.EXPAND)
+
+        self.resultSizer.Add(self.list, 1, wx.ALL|wx.EXPAND, 5)
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
         searchSizer.Add(self.searchInput, 1, wx.ALL|wx.EXPAND, 5)
         searchSizer.Add(self.searchChoice, 0, wx.ALL|wx.EXPAND, 5)
@@ -29,12 +30,8 @@ class DrinkSearch(wx.Panel):
         self.mainSizer.Add(self.resultSizer, 1, wx.ALL|wx.EXPAND, 5)
         self.SetSizer(self.mainSizer)
         self.mainSizer.Fit(self)
-        self.Layout()
-        # self.parent.SetScrollbar(wx.VERTICAL, 0, 16, 50)
-
         self.Bind(wx.EVT_BUTTON, self.searchRecipes, okBtn)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnClick, self.list)
-        self.displayTopDrinks(self.parent.get_all_drinks())
 
     def displayTopDrinks(self, drinks_arr):
         self.list.DeleteAllItems()
