@@ -4,7 +4,6 @@ class CustomDrinkForm(wx.Panel):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
-        self.parent = parent
         self.numIngredients = 5
         self.ingredientRowSizer = wx.BoxSizer(wx.VERTICAL)
         self.ingredientRow = []
@@ -63,7 +62,7 @@ class CustomDrinkForm(wx.Panel):
 
         # BINDS
         self.Bind(wx.EVT_BUTTON, self.submitNewDrink, okBtn)
-        self.Bind(wx.EVT_BUTTON, self.onCancel, cancelBtn)
+        # self.Bind(wx.EVT_BUTTON, self.onCancel, cancelBtn)
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         titleSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -155,10 +154,10 @@ class CustomDrinkForm(wx.Panel):
                 getGlassChoices.append(glass.split(',')[0])
         return getGlassChoices
 
-    def onCancel(self, event):
-        self.closeProgram()
+    # def onCancel(self, event):
+    #     self.closeProgram()
 
-    def closeProgram(self):
-        # self.GetParent() will get the frame which
-        # has the .Close() method to close the program
-        self.GetParent().Close()
+    # def closeProgram(self):
+    #     # self.GetParent() will get the frame which
+    #     # has the .Close() method to close the program
+    #     self.GetParent().Close()

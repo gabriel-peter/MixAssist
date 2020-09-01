@@ -2,19 +2,29 @@ import wx
 from project.view.custom_drink_form_panel import CustomDrinkForm
 from project.view.drink_search_panel import DrinkSearch
 from project.view.inspect_drink_panel import InspectDrink
+from project.view.drink_matcher_panel import DrinkMatcher
 
 # https://stackoverflow.com/questions/21550018/arranging-the-panels-automatically-in-wxpython
 class MainFrame(wx.Frame):
     def __init__(self, db, title='MixAssist 1.0', pos=(100,100)):
         super().__init__(None, title=title, pos=pos)
         self.db = db
-        self.panel = DrinkSearch(self)
-        self.panelStack = [self.panel]
+        self.InitUI()
+        
+    def InitUI(self):
         self.makeMenuBar()
         self.initToolbar()
-        self.Maximize(True)
-        self.Fit()
-        self.Centre()
+        # self.Maximize(True)
+        
+        self.customDrinkForm = CustomDrinkForm(self)
+        self.customDrinkForm.Hide()
+        self.drinkInspector = InspectDrink(self)
+        self.drinkInspector.Hide()
+        self.drinkMatcher = DrinkMatcher(self)
+        self.drinkMatcher.Hide()
+        self.drinkSearch = DrinkSearch(self)
+
+        self.SwitchPanel(self.drinkSearch)
 
     def submitNewDrink(self, drink):
         self.db.insert_drink(drink)
@@ -26,11 +36,6 @@ class MainFrame(wx.Frame):
         return self.db.filter_drinks(attr, query)
 
     def makeMenuBar(self):
-        """
-        A menu bar is composed of menus, which are composed of menu items.
-        This method builds a set of menus and binds handlers to be called
-        when the menu item is selected.
-        """
 
         # Make a file menu with Hello and Exit items
         fileMenu = wx.Menu()
@@ -64,71 +69,64 @@ class MainFrame(wx.Frame):
         # Finally, associate a handler function with the EVT_MENU event for
         # each of the menu items. That means that when that menu item is
         # activated then the associated handler function will be called.
-        self.Bind(wx.EVT_MENU, self.OpenCustomDrinkForm, makeDrinkAction)
-        self.Bind(wx.EVT_MENU, self.OpenDrinkSearch, searchDrinkAction)
+        # self.Bind(wx.EVT_MENU, self.OpenCustomDrinkForm, makeDrinkAction)
+        # self.Bind(wx.EVT_MENU, self.OpenDrinkSearch, searchDrinkAction)
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
 
     def OnExit(self, event):
-        """Close the frame, terminating the application."""
         self.Close(True)
 
     def OpenCustomDrinkForm(self, event):
-        panel = CustomDrinkForm(self)
-        self.panelStack.append(panel)
-        self.SwitchPanel(panel)
+        self.SwitchPanel(self.customDrinkForm)
 
     def OpenDrinkSearch(self, event):
-        panel = DrinkSearch(self)
-        self.panelStack.append(panel)
-        self.SwitchPanel(panel)
+        self.SwitchPanel(self.drinkSearch)
+
+    def OpenDrinkMatcher(self, event):
+        self.SwitchPanel(self.drinkMatcher)
 
     def FocusOnDrink(self, drink):
-        panel = InspectDrink(drink, self)
-        self.panelStack.append(panel)
-        self.SwitchPanel(panel)
+        self.SwitchPanel(self.drinkInspector)
+        self.drinkInspector.focus(drink)       
 
     def initToolbar(self):
         # https://discuss.wxpython.org/t/tutorial-segmentation-fault-11/34414/2
         toolbar = self.CreateToolBar()
-        bmp = wx.Bitmap('/Users/gabrielpeter/MixAssist/project/view/texit.png')
+        bmp = wx.Bitmap('/Users/gabrielpeter/MixAssist/project/assets/texit.png')
+        bmp2 = wx.Bitmap('/Users/gabrielpeter/MixAssist/project/assets/color.png')
+        bmp3 = wx.Bitmap('/Users/gabrielpeter/MixAssist/project/assets/hunter.png')
         assert bmp.IsOk()
+        assert bmp2.IsOk()
+        assert bmp3.IsOk()
         qtool = toolbar.AddTool(wx.ID_ANY, 'Quit', bmp)
+        makeTool = toolbar.AddTool(wx.ID_ANY, 'Make Drink', bmp2)
+        matchTool = toolbar.AddTool(wx.ID_ANY, 'Recommend Drink', bmp3)
+
         toolbar.Realize()
 
-        self.Bind(wx.EVT_TOOL, self.popPanelStack, qtool)
-
-        # self.SetSize((350, 250))
-        # self.SetTitle('Simple toolbar')
-        # self.Centre()
-
-    def popPanelStack(self, event):
-        print(self.panelStack)
-        if len(self.panelStack) == 1:
-            self.Close()
-            return
-        self.panelStack.pop()
-        self.SwitchPanel(self.panelStack[-1])
+        self.Bind(wx.EVT_TOOL, self.OpenDrinkSearch, qtool)
+        self.Bind(wx.EVT_TOOL, self.OpenCustomDrinkForm, makeTool)
+        self.Bind(wx.EVT_TOOL, self.OpenDrinkMatcher, matchTool)
 
     # https://stackoverflow.com/questions/31138061/wxpython-switch-between-multiple-panels
-    def SwitchPanel(self,show_pnl):
-        self.panel.Hide()
-        self.panel = show_pnl
+    def SwitchPanel(self, panel):
+        try:
+            self.panel.Hide()
+        except:
+            print('No frame, new initialized')
+        self.panel = panel
         self.panel.Show() 
+        self.panel.Fit()
+        self.panel.Layout()
+        self.panel.Centre()
         self.Layout()
-        # self.Fit()
+        self.Fit()
         self.Centre()
-        # self.panel.Fit()
-        # self.panel.Layout()
-        
-        # self.pane.Centre()
-        
-        
-
+       
 
     def OnAbout(self, event):
-        """Display an About Dialog"""
         wx.MessageBox("This is a wxPython Hello World sample",
                       "About Hello World 2",
                       wx.OK|wx.ICON_INFORMATION)

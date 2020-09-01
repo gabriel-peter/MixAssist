@@ -15,7 +15,7 @@ class DrinkSearch(wx.Panel):
         self.resultSizer = wx.BoxSizer(wx.VERTICAL)
 
         self.list = wx.ListCtrl(self, style=wx.LC_REPORT)
-        self.list.InsertColumn(0, 'Name',)
+        self.list.InsertColumn(0, 'Name')
         self.list.InsertColumn(1, 'Category')
         self.list.InsertColumn(2, 'Glassware')
         self.displayTopDrinks(self.parent.get_all_drinks())

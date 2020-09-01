@@ -6,7 +6,7 @@ bad_keys = ["strDrinkAlternate", 'strDrinkES', 'strDrinkDE', 'strDrinkFR',
 
 new_drinks = []
 
-with open('/Users/gabrielpeter/MixAssist/data_dump/all_drinks_MASTER.json') as drink_json:
+with open('/Users/gabrielpeter/MixAssist/project/data_dump/all_drinks_MASTER.json') as drink_json:
     drinks = json.loads(drink_json.read())
     for i in range(len(drinks)):
         drink = drinks[i]
@@ -31,11 +31,12 @@ with open('/Users/gabrielpeter/MixAssist/data_dump/all_drinks_MASTER.json') as d
                 x += 1
                 ingredient = drink['strIngredient{}'.format(x)].strip()
                 measurement = drink['strMeasure{}'.format(x)].strip()
-                if ingredient != None:
-                    ingredients += '{},{}|'.format(ingredient, measurement)
+                ingredients += '{},{}|'.format(ingredient, measurement)
             except:
-                pass
+                ingredient = drink['strIngredient{}'.format(x)]
+                if ingredient != None:
+                    ingredients += ingredient + '|'
         cleaned_drink['d_ingredients'] = ingredients
         new_drinks.append(cleaned_drink)
-    with open('/Users/gabrielpeter/MixAssist/data_dump/d_Data.json', 'w') as new_file:
+    with open('/Users/gabrielpeter/MixAssist/project/data_dump/d_Data.json', 'w') as new_file:
        new_file.writelines(json.dumps(new_drinks, indent=4))
